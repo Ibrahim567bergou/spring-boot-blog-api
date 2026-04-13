@@ -6,7 +6,6 @@ import com.blog.blogrbac_system.entity.Picture;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
-
 import java.util.function.Function;
 
 @Component
