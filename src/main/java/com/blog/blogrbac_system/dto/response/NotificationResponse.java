@@ -2,7 +2,6 @@ package com.blog.blogrbac_system.dto.response;
 
 
 import com.blog.blogrbac_system.constant.NotificationType;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Setter;
 import java.time.Instant;

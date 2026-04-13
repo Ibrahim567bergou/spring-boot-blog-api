@@ -4,7 +4,6 @@ import com.blog.blogrbac_system.constant.StatusArticle;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.LinkedHashSet;

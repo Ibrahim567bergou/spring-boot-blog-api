@@ -2,7 +2,6 @@ package com.blog.blogrbac_system.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;

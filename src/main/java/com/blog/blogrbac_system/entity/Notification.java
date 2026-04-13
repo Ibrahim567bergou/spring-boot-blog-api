@@ -3,7 +3,6 @@ package com.blog.blogrbac_system.entity;
 import com.blog.blogrbac_system.constant.NotificationType;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.Instant;
 
 @Entity
