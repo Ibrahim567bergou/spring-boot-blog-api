@@ -38,7 +38,9 @@ public class TagServiceImpl implements TagService {
         this.validateExistTag(request.getName(), tag.getId());
         tag.setName(request.getName());
         tag.setDescription(request.getDescription());
-        tag.setActive(request.is_active());
+        if(request.getIsActive() != null){
+            tag.setActive(request.getIsActive());
+        }
         return tagMapper.apply(tagsRepository.save(tag));
     }
 
