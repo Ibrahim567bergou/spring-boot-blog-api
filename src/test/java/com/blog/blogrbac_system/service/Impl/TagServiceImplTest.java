@@ -42,7 +42,7 @@ class TagServiceImplTest {
         this.tagRequestCreate = TagRequest.builder()
                 .name("innovation")
                 .description("innovation for test")
-                .is_active(true)
+                .isActive(true)
                 .build();
         this.tag = Tag.builder()
                 .id(1)
@@ -62,7 +62,7 @@ class TagServiceImplTest {
         this.tagRequestUpdate = TagRequest.builder()
                 .name("technology")
                 .description("technology for test")
-                .is_active(true)
+                .isActive(true)
                 .build();
     }
     @Nested
@@ -107,14 +107,32 @@ class TagServiceImplTest {
         void shouldUpdateTagSuccessfully(){
             Integer id = 1;
             when(tagsRepository.findById(id)).thenReturn(Optional.of(tag));
-
-
-
+            when(tagsRepository.existsByNameAndIdNot(tagRequestUpdate.getName(),id)).thenReturn(false);
+            when(tagsRepository.save(any(Tag.class))).thenReturn(tag);
+            when(tagMapper.apply(tag)).thenReturn(tagResponse);
+            // when
+            TagResponse response = tagService.updateTag(id, tagRequestUpdate);
+            // then
+            assertNotNull(response);
+            assertEquals(tagResponse, response);
+            verify(tagsRepository).findById(id);
+            verify(tagsRepository).existsByNameAndIdNot(tagRequestUpdate.getName(), id);
+            verify(tagsRepository).save(any(Tag.class));
+            verify(tagMapper).apply(tag);
         }
         @Test
-        @DisplayName("Should throw AlreadyExistsException when id exists and tag name exists")
+        @DisplayName("Should throw AlreadyExistsException tag name exists")
         void shouldThrowAlreadyExistException(){
+            Integer id = 1;
+            when(tagsRepository.findById(id)).thenReturn(Optional.of(tag));
+            when(tagsRepository.existsByNameAndIdNot(tagRequestUpdate.getName(),id)).thenReturn(true);
+            assertThrows(AlreadyExistException.class,
+                    () -> tagService.updateTag(id, tagRequestUpdate));
 
+            verify(tagsRepository).findById(id);
+            verify(tagsRepository).existsByNameAndIdNot(tagRequestUpdate.getName(), id);
+            verify(tagsRepository, never()).save(any());
+            verifyNoInteractions(tagMapper);
         }
 
     }
