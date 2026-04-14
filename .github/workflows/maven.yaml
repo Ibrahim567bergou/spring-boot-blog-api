@@ -38,15 +38,6 @@ jobs:
         run: |
           sudo apt-get install -y postgresql-client
           psql -h localhost -U postgres -d postgres -c "CREATE SCHEMA IF NOT EXISTS articles;"
-      - name: Unit Tests
-        env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/postgres
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
-          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-        run: mvn -B test --file pom.xml
       - name: Build the application
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/postgres
@@ -55,6 +46,4 @@ jobs:
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-        run: |
-          mvn clean 
-          mvn -B package --file pom.xml
+        run: mvn clean package -B
