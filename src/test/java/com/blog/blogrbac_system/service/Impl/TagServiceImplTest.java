@@ -4,6 +4,7 @@ import com.blog.blogrbac_system.dto.request.TagRequest;
 import com.blog.blogrbac_system.dto.response.TagResponse;
 import com.blog.blogrbac_system.entity.Tag;
 import com.blog.blogrbac_system.exception.exceptions.AlreadyExistException;
+import com.blog.blogrbac_system.exception.exceptions.TagNotFoundException;
 import com.blog.blogrbac_system.mapper.TagMapper;
 import com.blog.blogrbac_system.repository.TagsRepository;
 import org.junit.jupiter.api.*;
@@ -11,8 +12,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.crossstore.ChangeSetPersister;
+
 import java.time.Instant;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -132,6 +136,73 @@ class TagServiceImplTest {
             verify(tagsRepository).findById(id);
             verify(tagsRepository).existsByNameAndIdNot(tagRequestUpdate.getName(), id);
             verify(tagsRepository, never()).save(any());
+            verifyNoInteractions(tagMapper);
+        }
+
+    }
+
+    @Nested
+    @DisplayName("Delete Tag Test")
+    class deleteTagTest{
+
+        @Test
+        @DisplayName("should delete tag when id exists")
+        void shouldDeleteTagSuccessfully(){
+            Integer id = 1;
+            when(tagsRepository.findById(id)).thenReturn(Optional.of(tag));
+
+            // Action
+            tagService.deleteTag(id);
+
+            //Assert & verify
+            verify(tagsRepository).findById(id);
+            verify(tagsRepository).delete(tag);
+        }
+        @Test
+        @DisplayName("Throw Exception not found tag when id not exists")
+        void shouldThrowNotFoundException(){
+            Integer id = 1;
+            when(tagsRepository.findById(id)).thenReturn(Optional.empty());
+
+            assertThrows(TagNotFoundException.class,
+                    () -> tagService.deleteTag(id));
+
+            verify(tagsRepository).findById(id);
+            verify(tagsRepository, never()).delete(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("getAll Tag Test")
+    class getAllTest{
+
+        @Test
+        @DisplayName("should get all tag ")
+        void shouldGetAllTagSuccessfully(){
+            when(tagsRepository.findAll()).thenReturn(List.of(tag));
+            when(tagMapper.apply(tag)).thenReturn(tagResponse);
+            // action
+            var response = tagService.getAll();
+
+            //assert & verify
+
+            assertNotNull(response);
+            assertEquals(tagResponse, response.getFirst());
+            verify(tagsRepository).findAll();
+            verify(tagMapper).apply(tag);
+        }
+
+        @Test
+        @DisplayName("should return empty list when no tags")
+        void shouldReturnEmptyList(){
+            when(tagsRepository.findAll()).thenReturn(List.of());
+
+            var response = tagService.getAll();
+
+            assertNotNull(response);
+            assertTrue(response.isEmpty());
+
+            verify(tagsRepository).findAll();
             verifyNoInteractions(tagMapper);
         }
 
