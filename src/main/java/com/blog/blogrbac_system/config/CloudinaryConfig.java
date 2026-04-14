@@ -18,7 +18,7 @@ public class CloudinaryConfig {
     @Value("${cloudinary.api-key}")
     private String apiKey;
 
-    @Value("${cloud.api-secret}")
+    @Value("${cloudinary.api-secret}")
     private String apiSecret;
 
     @Bean
