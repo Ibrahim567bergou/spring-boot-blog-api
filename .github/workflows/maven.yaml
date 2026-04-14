@@ -32,6 +32,12 @@ jobs:
         with:
           distribution: 'corretto'
           java-version: 21
+      - name: Create article shema
+        env:
+          PGPASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+        run: |
+          sudo apt-get install -y postgresql-client
+          psql -h localhost -U postgres -d postgres -c "CREATE SCHEMA IF NOT EXISTS articles;"
       - name: Unit Tests
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/postgres
