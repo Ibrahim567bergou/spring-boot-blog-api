@@ -8,6 +8,15 @@ jobs:
   build-deploy:
     name: Build and deploy Spring Blog
     runs-on: ubuntu-latest
+    env:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+
+      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+
     services:
       postgres:
         image: postgres:15
@@ -32,18 +41,25 @@ jobs:
         with:
           distribution: 'corretto'
           java-version: 21
-      - name: Create article shema
+
+      - name: Install Postgres Client CLI
+        run: sudo apt-get install -y postgresql-client
+      - name: Create Schema Article
         env:
           PGPASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
         run: |
-          sudo apt-get install -y postgresql-client
           psql -h localhost -U postgres -d postgres -c "CREATE SCHEMA IF NOT EXISTS articles;"
-      - name: Build the application
+      - name: Compile Project
+        run: mvn clean compile
+      - name: test
+        run: mvn test
+      - name: Run SonarQube Analysis
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/postgres
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
-          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-        run: mvn clean package -B
+          SONAR_TOKEN:${{secrets.SONAR_TOKEN}}
+        run: mvn sonar:sonar \
+          -D sonar.login=$SONAR_TOKEN \
+          -D sonar.host.url=https://sonarcloud.io \
+          -D sonar.qualitygate.wait=true
+      - name: Create file Jar
+        run: mvn package
+
