@@ -154,6 +154,13 @@
 						</goals>
 					</execution>
 					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
 						<id>check-coverage</id>
 						<phase>verify</phase>
 						<goals>
@@ -173,13 +180,6 @@
 								</rule>
 							</rules>
 						</configuration>
-					</execution>
-					<execution>
-						<id>report</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
