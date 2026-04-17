@@ -57,12 +57,11 @@ jobs:
         env:
           SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
         run: |
-          mvn sonar:sonar \
+          mvn clean verify sonar:sonar \
           -Dsonar.projectKey=Ibrahim567bergou_spring-boot-blog-api \
           -Dsonar.organization=ibrahim567bergou \
           -Dsonar.host.url=https://sonarcloud.io \
           -Dsonar.login=$SONAR_TOKEN \
-          -Dsonar.qualitygate.wait=true
       - name: Create file Jar
         run: mvn package
 
